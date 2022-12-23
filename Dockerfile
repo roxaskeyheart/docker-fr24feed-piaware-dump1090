@@ -167,8 +167,8 @@ RUN apt-get update && \
     apt-get install -y \
     apache2 \
     rm -rf /var/lib/apt/lists/*
-    rm -rf /var/www/html
-    ln -s /copy_root/usr/lib/fr24 /var/www/html
+RUN rm -rf /var/www/html
+RUN ln -s /copy_root/usr/lib/fr24 /var/www/html
 
 # CONFD
 FROM debian:bullseye-slim as confd
@@ -308,7 +308,7 @@ RUN arch=$(dpkg --print-architecture) && \
     # THTTPD
     find /usr/lib/fr24/public_html -type d -print0 | xargs -0 chmod 0755 && \
     find /usr/lib/fr24/public_html -type f -print0 | xargs -0 chmod 0644 && \
-    /thttpd -V && \
+    #/thttpd -V && \
     # FR24FEED
     /build/fr24feed.sh && \
     /fr24feed/fr24feed/fr24feed --version && \
