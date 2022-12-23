@@ -145,22 +145,30 @@ RUN set -x && \
     /usr/local/share/adsbexchange/venv/bin/python3 -c 'import mlat.client'
 
 # THTTPD
-FROM alpine:3.13.2 AS thttpd
+#FROM alpine:3.13.2 AS thttpd
 
-ENV THTTPD_VERSION=2.29
+#ENV THTTPD_VERSION=2.29
 
 # Install all dependencies required for compiling thttpd
-RUN apk add gcc musl-dev make
+#RUN apk add gcc musl-dev make
 
 # Download thttpd sources
-RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
-    && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
-    && mv /thttpd-${THTTPD_VERSION} /thttpd
+#RUN wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz \
+#    && tar xzf thttpd-${THTTPD_VERSION}.tar.gz \
+#    && mv /thttpd-${THTTPD_VERSION} /thttpd
 
 # Compile thttpd to a static binary which we can copy around
-RUN cd /thttpd \
-    && ./configure \
-    && make CCOPT='-O2 -s -static' thttpd
+#RUN cd /thttpd \
+#    && ./configure \
+#    && make CCOPT='-O2 -s -static' thttpd
+
+WORKDIR /tmp
+RUN apt-get update && \
+    apt-get install -y \
+    apache2 \
+    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/www/html
+    ln -s /copy_root/usr/lib/fr24 /var/www/html
 
 # CONFD
 FROM debian:bullseye-slim as confd
@@ -183,7 +191,7 @@ RUN mv /copy_root/piaware_builder/piaware_*_*.deb /copy_root/piaware.deb && \
     rm -rf /copy_root/piaware_builder
 RUN mv /copy_root/tcltls-rebuild/tcl-tls_*.deb /copy_root/tcl-tls.deb && \
     rm -rf /copy_root/tcltls-rebuild
-COPY --from=thttpd /thttpd/thttpd /copy_root/
+#COPY --from=thttpd /thttpd/thttpd /copy_root/
 COPY --from=confd /opt/confd/bin/confd /copy_root/opt/confd/bin/
 ADD build /copy_root/build
 
